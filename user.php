@@ -21,7 +21,7 @@
 
         private $db_table = "user";
 
-        //调用DbConnect对象完成数据库链接初始化
+        //调用DbConnect对象完成数据库链接初始化jkhiu
         public function __construct()
         {
             $this->db = new DbConnect();
@@ -59,18 +59,24 @@
                 //email正确，尝试向数据库插入新用户项
                 if ($isValid) {
                     $query = "insert into " . $this->db_table . " (Uname, Passwd, email) values ('$username', '$password', '$email')";
-                    $inserted = mysqli_query($this->db->getDb(), $query);
+                    $inserted_1 = mysqli_query($this->db->getDb(), $query);
+                    $query = "insert into user_chapter_state (Uname) values ('$username')";
+                    $inserted_2 = mysqli_query($this->db->getDb(), $query);
                     //插入完成，返回注册成功
-                    if ($inserted == 1) {
-
+                    if ($inserted_1 == 1 && $inserted_2 == 1) {
                         $json['success'] = 1;
                         $json['message'] = "Successfully registered";
                     //插入失败，返回注册失败
-                    } else {
-
+                    } else if(inserted_1 == 0) {
+                        $query = "delete from user_chapter_state where Uname = '$username'";
+                        mysqli_query($this->db->getDb(), $query);
                         $json['success'] = 0;
-                        $json['message'] = "Unknown error in registering. Fail to insert user.";
-
+                        $json['message'] = "Registering Failed. Fail to insert user.";
+                    } else {
+                        $query = "delete from " . $this->db_table . " where Uname = '$username'";
+                        mysqli_query($this->db->getDb(), $query);
+                        $json['success'] = 0;
+                        $json['message'] = "Registering Failed. Fail to init user chapter state.";
                     }
                     mysqli_close($this->db->getDb());
                 } else {
