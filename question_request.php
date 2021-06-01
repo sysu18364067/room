@@ -21,7 +21,7 @@ require_once 'QuestionBank.php';
                 }
                 break;
             case 'QuestionContent':
-                if (isset($_POST['Qid'])) {
+                if (isset($_POST['Qid']) && isset($_POST['username'])) {
                     $json = $questionObject->updateUserState($_POST['username'], $_POST['Qid']);
                     if($json['success'] = 0){
                         echo json_encode($json);
@@ -32,7 +32,7 @@ require_once 'QuestionBank.php';
                 }
                 else {
                     $json['success'] = 0;
-                    $json['message'] = "Invalid Question Request(Unknown Qid)";
+                    $json['message'] = "Invalid Question Request(Unknown Qid or username)";
                 }
                 break;
             case 'updateUserState':
