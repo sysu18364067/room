@@ -35,5 +35,12 @@
         <p>提交类型<input type=type name="type"></p>
         <p><input type="submit" name="submit" value="submit"></p>
     </form>
+
+    <form action="upload_record_file.php" method="post" enctype="multipart/form-data">
+        <p>用户名<input type=text name="username"></p>
+        <label for="file">文件名：</label>
+        <input type="file" name="record" id="file"><br>
+        <input type="submit" name="submit" value="提交">
+    </form>
   </body>
 </html>
