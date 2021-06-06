@@ -153,14 +153,19 @@
         {
 
             $json = array();
-            $query = "select TimerScore, PassScore from " . $this->db_table . " where Uname = '$username' AND Passwd = '$password'";
+            $query = "select * from " . $this->db_table . " inner join user_chapter_fin_state on (". $this->db_table .".Uname = user_chapter_fin_state.Uname) where user.Uname = '$username' AND user.Passwd = '$password'";
 
             if (mysqli_num_rows($result = mysqli_query($this->db->getDb(), $query))>0) {
                 $json['success'] = 1;
                 $json['message'] = "Successfully log in";
-                $json['PassScore'] = (int)mysqli_fetch_assoc($result)['PassScore'];
-                mysqli_data_seek($result, 0);
-                $json['TimerScore'] = (int)mysqli_fetch_assoc($result)['TimerScore'];
+                $row = mysqli_fetch_assoc($result);
+                $json['PassScore'] = (int)$row['PassScore'];
+                $json['TimerScore'] = (int)$row['TimerScore'];
+                $array = array();
+                for($i = 1; $i <=12; $i++){
+                    $array[] = (int)$row["chapter".$i];
+                }
+                $json['Fin'] = $array;
             } else {
                 $json['success'] = 0;
                 $json['message'] = "Incorrect username or password";

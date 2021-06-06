@@ -31,6 +31,8 @@
         $json_array = $userObject->loginUsers($username, $hashed_password);
         if($json_array['success'] == 1) {
             $json_array['Ostates'] = $userObject->getOrnamentOwned($username);
+            $path  = "./user/record/".$_POST['username'].".txt";
+            $json_array["online_record"] = (int)file_exists($path);
         }
         echo json_encode($json_array);
     }

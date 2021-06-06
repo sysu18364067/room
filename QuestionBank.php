@@ -1,5 +1,6 @@
 <?php
     include_once 'db-connect.php';
+    require_once 'user.php';
     class QuestionBank
     {
         private $db;
@@ -20,7 +21,11 @@
                 $json['success'] = 1;
                 $json['message'] = "Request Done";
                 $json['chapter'] = $questionContent['chapterID'];
-                $json['content'] = $questionContent['Qcontent'].' '.$questionContent['Qoptions'];
+                $json['content'] = $questionContent['Qcontent'];
+                $json['optionA'] = $questionContent['QoptionA'];
+                $json['optionB'] = $questionContent['QoptionB'];
+                $json['optionC'] = $questionContent['QoptionC'];
+                $json['optionD'] = $questionContent['QoptionD'];
                 $json['answer'] = $questionContent['Qanswer'];
                 $json['analysis'] = $questionContent['Qanalysis'];
             }
@@ -45,13 +50,18 @@
         public function getBasicQuestionContent($BQid)
         {
             $json = array();
-            $query = "select BQcontent, BQoptions, BQanswer from basic_question_content where BQid = '$BQid'";
+            $query = "select * from basic_question_content where BQid = '$BQid'";
             if(mysqli_num_rows($result = mysqli_query($this->db->getDb(), $query))) {
                 $questionContent = mysqli_fetch_assoc($result);
                 $json['success'] = 1;
                 $json['message'] = "Request Done";
-                $json['content'] = $questionContent['BQcontent'].' '.$questionContent['BQoptions'];
+                $json['content'] = $questionContent['BQcontent'];
+                $json['optionA'] = $questionContent['BQoptionA'];
+                $json['optionB'] = $questionContent['BQoptionB'];
+                $json['optionC'] = $questionContent['BQoptionC'];
+                $json['optionD'] = $questionContent['BQoptionD'];
                 $json['answer'] = $questionContent['BQanswer'];
+                $json['analysis'] = $questionContent['BQanalysis'];
             }
             else{
                 $json['success'] = 0;
@@ -72,6 +82,34 @@
             else{
                 $json['success'] = 0;
                 $json['message'] = "Invalid username or ChapterID";
+            }
+            return $json;
+        }
+
+        public function finishChapter($username, $ChapterID){
+            $json = array();
+            $chapter = "chapter".$ChapterID;
+            $query = "select ".$chapter." from user_chapter_fin_state where Uname = '$username'";
+            if(mysqli_num_rows($result = mysqli_query($this->db->getDb(), $query))){
+                $isFin = mysqli_fetch_assoc($result)[$chapter];
+                if(!$isFin){
+                    $userObject = new User();
+                    $userObject->UpdatePassScore($username, 1);
+                    $query = "update user_chapter_fin_state set ".$chapter." = 1 where Uname = '$username'";
+                    if(mysqli_query($this->db->getDb(), $query)){
+                        $json['success'] = 1;
+                        $json['message'] = "Request Done";
+                        $userObject->UpdatePassScore($username, -1);
+                    }
+                    else{
+                        $json['success'] = 0;
+                        $json['message'] = "Failed to Update User State";
+                    }
+                }
+            }
+            else{
+                $json['success'] = 0;
+                $json['message'] = "No Username Found";
             }
             return $json;
         }
@@ -106,6 +144,7 @@
             return $array;
         }
 
+        /*
         //插入一条薄弱点记录，返回插入结果。
         public function takeMistakeNote($Uname, $Qid)
         {
@@ -131,6 +170,23 @@
             }
             return $json;
         }
+        */
+
+        public function takeMistakeNote($Uname, $Qid)
+        {
+            $json = array();
+            $query = "insert into user_mistake_note SELECT '$Uname', '$Qid' from dual where not exists(select Qid from user_mistake_note where Qid = '$Qid' and Uname = '$Uname')";
+            if(mysqli_query($this->db->getDb(), $query)){
+                $json['success'] = 1;
+                $json['message'] = "Notes Has Been Token";
+            }
+            else{
+                $json['success'] = 0;
+                $json['message'] = "Invalid Qid, Failed to Take Note";
+            }
+            return $json;
+        }
+
         public function updateUserState($username, $Qid){
             $json = array();
             $query = "select chapterID from question_content where Qid = '$Qid'";
@@ -148,6 +204,26 @@
             else{
                 $json['success'] = 0;
                 $json['message'] = "Invalid Qid";
+            }
+            return $json;
+        }
+
+        public function getMistakeNote($username){
+            $json = array();
+            $array = array();
+            $query = "select Qid from user_mistake_note where Uname = '$username'";
+            if(mysqli_num_rows($result = mysqli_query($this->db->getDb(), $query))){
+                $json['success'] = 1;
+                $json['message'] = "Get Mistake Note Success";
+                while($rows = mysqli_fetch_array($result)) {
+                    $array[] = (int)$rows['Qid'];
+                }
+                $json['Qid'] = $array;
+            }
+            else{
+                $json['success'] = 0;
+                $json['message'] = "Empty Record";
+                $json['Qid'] = $array;
             }
             return $json;
         }

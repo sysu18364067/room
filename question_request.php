@@ -20,6 +20,15 @@ require_once 'QuestionBank.php';
                     $json['message'] = "Invalid Request(Empty ChapterID or username)";
                 }
                 break;
+            case 'finishChapter':
+                if(isset($_POST['ChapterID']) && isset($_POST['username'])){
+                    $json = $questionObject->finishChapter($_POST['username'], $_POST['ChapterID']);
+                }
+                else{
+                    $json['success'] = 0;
+                    $json['message'] = "Invalid Request(Empty ChapterID or username)";
+                }
+                break;
             case 'QuestionContent':
                 if (isset($_POST['Qid']) && isset($_POST['username'])) {
                     $json = $questionObject->updateUserState($_POST['username'], $_POST['Qid']);
@@ -83,6 +92,15 @@ require_once 'QuestionBank.php';
                 else {
                     $json['success'] = 0;
                     $json['message'] = "Invalid Weakness Request(Unknown Wid)";
+                }
+                break;
+            case 'MistakeNote':
+                if(isset($_POST['username'])){
+                    $json = $questionObject->getMistakeNote($_POST['username']);
+                }
+                else{
+                    $json['success'] = 0;
+                    $json['message'] = "Empty Username";
                 }
                 break;
             default:

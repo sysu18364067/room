@@ -14,11 +14,13 @@
         $json = $userObject->UpdateTimerScore($_POST['username'], $_POST['score']);
         echo json_encode($json);
     }
-    //更改通关得分请求
+    /*
+    //该接口已被弃用
     else if($_POST['type'] == "PassScore"){
         $json = $userObject->UpdatePassScore($_POST['username'], $_POST['score']);
         echo json_encode($json);
     }
+    */
     //无效的请求类型
     else{
         $json['success'] = 0;
