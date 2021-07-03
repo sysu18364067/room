@@ -62,8 +62,10 @@
                     $inserted_1 = mysqli_query($this->db->getDb(), $query);
                     $query = "insert into user_chapter_state (Uname) values ('$username')";
                     $inserted_2 = mysqli_query($this->db->getDb(), $query);
+                    $query = "insert into user_chapter_fin_state (Uname) values ('$username')";
+                    $inserted_3 = mysqli_query($this->db->getDb(), $query);
                     //插入完成，返回注册成功
-                    if ($inserted_1 == 1 && $inserted_2 == 1) {
+                    if ($inserted_1 == 1 && $inserted_2 == 1 && $inserted_3) {
                         $json['success'] = 1;
                         $json['message'] = "Successfully registered";
                     //插入失败，返回注册失败

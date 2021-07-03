@@ -20,13 +20,12 @@
     $userObject = new User();
 
     //从submit项中获取操作注册或登入
-    if($_POST['submit'] == "signup"){
+    if($_POST['type'] == "signup"){
         $hashed_password = md5($password);
         $json_registration = $userObject->createNewRegisterUser($username, $hashed_password, $email);
         echo json_encode($json_registration);
     }
-
-    if($_POST['submit'] == "login"){
+    else if($_POST['type'] == "login"){
         $hashed_password = md5($password);
         $json_array = $userObject->loginUsers($username, $hashed_password);
         if($json_array['success'] == 1) {
@@ -35,4 +34,9 @@
             $json_array["online_record"] = (int)file_exists($path);
         }
         echo json_encode($json_array);
+    }
+    else{
+        $json = array();
+        $json['success'] = 0;
+        $json['message'] = "Invalid Type";
     }

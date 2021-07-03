@@ -7,7 +7,6 @@ if(isset($_POST['username'])){
         $json['message'] = "The file".  basename($_FILES['record']['name']). " has been uploaded";
     }
     else {
-        echo $_FILES["file"]["name"];
         $json['success'] = 0;
         $json['message'] = "Upload Failed";
     }

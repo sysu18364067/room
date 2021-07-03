@@ -14,11 +14,11 @@
         $json = $userObject->purchase($_POST['username'], $_POST['ornamentName']);
         echo json_encode($json);
     }
-    //更改通关得分请求
-    else if($_POST['type'] == "upgrade"){
-        $json = $userObject->UpdatePassScore($_POST['username'], 1);
-        echo json_encode($json);
-    }
+    //更改通关得分请求（该接口已被弃用）
+//    else if($_POST['type'] == "upgrade"){
+//        $json = $userObject->UpdatePassScore($_POST['username'], 1);
+//        echo json_encode($json);
+//    }
     //无效的请求类型
     else{
         $json['success'] = 0;

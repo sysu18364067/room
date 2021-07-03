@@ -1,6 +1,18 @@
 <?php
     include_once 'db-connect.php';
     require_once 'user.php';
+
+    /***********************************************************************************************
+     *类名 : QuestionBank
+     *类描述 : 用户类，用于进行以用户为主要对象的操作，主要包括用户注册、登录、购买、积分修改等。
+     *类成员 :
+        $db : 数据库链接
+        public function getQuestionContent($Qid): 基于查询的Qid获取数据库对应的题目内容。返回json结果。
+        public function getBasicQuestion($Qid)：基于查询的Qid获取数据库对应的基础题BQid，返回json结果。
+        public function getBasicQuestionContent($BQid)：基于查询的BQid查询数据库对应的基础题内容，返回json结果
+        public function startChapter($username, $ChapterID)：基于用户名和章节号，获取用户的章节做题记录，返回json结果
+        public function finishChapter($username, $ChapterID)：基于输入的用户名和ID，
+     ***********************************************************************************************/
     class QuestionBank
     {
         private $db;
@@ -11,11 +23,13 @@
             $this->db = new DbConnect();
         }
 
+
         //使用Qid获取题目内容, 返回一系列（Qid, Qcontent）的mysqli_result对象
         public function getQuestionContent($Qid)
         {
             $json = array();
             $query = "select * from question_content where Qid = '$Qid'";
+            ini_set('magic_quotes_sybase', 0);
             if(mysqli_num_rows($result = mysqli_query($this->db->getDb(), $query))) {
                 $questionContent = mysqli_fetch_assoc($result);
                 $json['success'] = 1;
@@ -208,10 +222,10 @@
             return $json;
         }
 
-        public function getMistakeNote($username){
+        public function getMistakeNote($username, $ChapterID){
             $json = array();
             $array = array();
-            $query = "select Qid from user_mistake_note where Uname = '$username'";
+            $query = "select user_mistake_note.Qid from user_mistake_note inner join question_content on(user_mistake_note.Qid = question_content.Qid) where Uname = '$username' and chapterID = '$ChapterID'";
             if(mysqli_num_rows($result = mysqli_query($this->db->getDb(), $query))){
                 $json['success'] = 1;
                 $json['message'] = "Get Mistake Note Success";
@@ -224,6 +238,21 @@
                 $json['success'] = 0;
                 $json['message'] = "Empty Record";
                 $json['Qid'] = $array;
+            }
+            return $json;
+        }
+
+        public function removeMistakeNote($username, $Qid){
+            $json = array();
+            $array = array();
+            $query = "delete from user_mistake_note where Uname = '$username' and Qid = '$Qid'";
+            if(mysqli_query($this->db->getDb(), $query)){
+                $json['success'] = 1;
+                $json['message'] = "Remove Note Success";
+            }
+            else{
+                $json['success'] = 0;
+                $json['message'] = "Remove Note Failed, Maybe SQL error or No Record Found";
             }
             return $json;
         }

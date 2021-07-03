@@ -77,8 +77,8 @@ require_once 'QuestionBank.php';
                 }
                 break;
             case 'BasicQuestionContent':
-                if (isset($_POST['Qid'])) {
-                    $json = $questionObject->getBasicQuestionContent($_POST['Qid']);
+                if (isset($_POST['BQid'])) {
+                    $json = $questionObject->getBasicQuestionContent($_POST['BQid']);
                 }
                 else {
                     $json['success'] = 0;
@@ -94,13 +94,22 @@ require_once 'QuestionBank.php';
                     $json['message'] = "Invalid Weakness Request(Unknown Wid)";
                 }
                 break;
-            case 'MistakeNote':
-                if(isset($_POST['username'])){
-                    $json = $questionObject->getMistakeNote($_POST['username']);
+            case 'CheckMistakeNote':
+                if(isset($_POST['username']) && isset($_POST['ChapterID'])){
+                    $json = $questionObject->getMistakeNote($_POST['username'], $_POST['ChapterID']);
                 }
                 else{
                     $json['success'] = 0;
-                    $json['message'] = "Empty Username";
+                    $json['message'] = "Empty Username or ChapterID";
+                }
+                break;
+            case 'RemoveMistakeNote':
+                if(isset($_POST['username']) && isset($_POST['Qid'])){
+                    $json = $questionObject->removeMistakeNote($_POST['username'], $_POST['Qid']);
+                }
+                else{
+                    $json['success'] = 0;
+                    $json['message'] = "Empty Username or Qid";
                 }
                 break;
             default:
