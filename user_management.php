@@ -18,7 +18,6 @@
     }
 
     $userObject = new User();
-
     //从submit项中获取操作注册或登入
     if($_POST['type'] == "signup"){
         $hashed_password = md5($password);
